@@ -26,7 +26,7 @@ pipeline {
         stage('Create Virtual Environment') {
             steps {
                 bat '''
-                    %PYTHON% -m venv %VENV%
+                    "C:\\Program Files\\Python313\\python.exe" -m venv .venv
                     call %VENV%\\Scripts\\activate
                     pip install --upgrade pip
                 '''
