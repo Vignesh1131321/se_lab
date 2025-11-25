@@ -4,7 +4,9 @@ pipeline {
     environment {
         IMAGE = "vignesh1131321/imt2023003:jenkins"
         VENV = ".venv"
-        PYTHON = "python"   // Windows python command
+        // Ensure Python 3.13 installation path is available to the pipeline
+        PATH = "${env.PATH};C:\\Program Files\\Python313"
+        PYTHON = "C:\\Program Files\\Python313\\python.exe"
     }
 
     stages {
@@ -57,7 +59,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                withCredentials([usernamePassword(credentialsId: 'docker_jenkins',
                                                   usernameVariable: 'USER',
                                                   passwordVariable: 'PASS')]) {
                     bat '''
