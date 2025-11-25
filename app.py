@@ -1,14 +1,30 @@
-from flask import Flask, jsonify
+tasks = []
 
-app = Flask(__name__)
+def add_task(title):
+    task = {
+        "id": len(tasks) + 1,
+        "title": title,
+        "completed": False
+    }
+    tasks.append(task)
+    return task
 
-@app.get("/")
-def home():
-    return jsonify({"message": "Python CI/CD Demo API is running!"})
+def list_tasks():
+    return tasks
 
-@app.get("/hello/<name>")
-def greet(name):
-    return jsonify({"greeting": f"Hello, {name}!"})
+def update_task(task_id, completed=None, title=None):
+    for task in tasks:
+        if task["id"] == task_id:
+            if title is not None:
+                task["title"] = title
+            if completed is not None:
+                task["completed"] = completed
+            return task
+    return None
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+def delete_task(task_id):
+    for task in tasks:
+        if task["id"] == task_id:
+            tasks.remove(task)
+            return True
+    return False

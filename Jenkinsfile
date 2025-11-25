@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = "prathamchawdhry/ci-cd-demo2:jenkins"
+        IMAGE = "vignesh1131321/imt2023003:jenkins"
         VENV = ".venv"
         PYTHON = "/usr/bin/python3" 
     }
@@ -14,7 +14,7 @@ pipeline {
                 checkout([$class: 'GitSCM',
                   branches: [[name: '*/main']],
                   userRemoteConfigs: [[
-                    url: 'https://github.com/pratham-chawdhry/ci-cd-demo2.git',
+                    url: 'https://github.com/Vignesh1131321/se_lab.git',
                     credentialsId: 'github-creds'
                   ]]
                 ])
