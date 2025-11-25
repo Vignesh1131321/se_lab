@@ -9,7 +9,7 @@ pipeline {
         // Define the Python path once here
         PYTHON = "C:\\Program Files\\Python313\\python.exe"
         // Make sure this ID matches what is in your Jenkins Credentials
-        DOCKER_CRED  = 'docker-jenkins' 
+        DOCKER_CRED  = 'docker_jenkins' 
     }
 
     stages {
