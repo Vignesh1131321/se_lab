@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE = "vignesh1131321/imt2023003:jenkins"
         VENV = ".venv"
-        PYTHON = "/usr/bin/python3" 
+        PYTHON = "python"   // Windows python command
     }
 
     stages {
@@ -23,26 +23,35 @@ pipeline {
 
         stage('Create Virtual Environment') {
             steps {
-                sh '$PYTHON -m venv $VENV'
-                sh '$VENV/bin/pip install --upgrade pip'
+                bat '''
+                    %PYTHON% -m venv %VENV%
+                    call %VENV%\\Scripts\\activate
+                    pip install --upgrade pip
+                '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh '$VENV/bin/pip install -r requirements.txt'
+                bat '''
+                    call %VENV%\\Scripts\\activate
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '$VENV/bin/pytest -v'
+                bat '''
+                    call %VENV%\\Scripts\\activate
+                    pytest -v
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE .'
+                bat "docker build -t %IMAGE% ."
             }
         }
 
@@ -51,9 +60,9 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
                                                   usernameVariable: 'USER',
                                                   passwordVariable: 'PASS')]) {
-                    sh '''
-                      echo $PASS | docker login -u $USER --password-stdin
-                      docker push $IMAGE
+                    bat '''
+                        echo %PASS% | docker login -u %USER% --password-stdin
+                        docker push %IMAGE%
                     '''
                 }
             }
@@ -61,11 +70,11 @@ pipeline {
 
         stage('Deploy Container') {
             steps {
-                sh '''
-                  docker pull $IMAGE
-                  docker stop ci-cd-demo || true
-                  docker rm ci-cd-demo || true
-                  docker run -d -p 5000:5000 --name ci-cd-demo $IMAGE
+                bat '''
+                    docker pull %IMAGE%
+                    docker stop ci-cd-demo || true
+                    docker rm ci-cd-demo || true
+                    docker run -d -p 5000:5000 --name ci-cd-demo %IMAGE%
                 '''
             }
         }
