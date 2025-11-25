@@ -6,8 +6,10 @@ pipeline {
         VENV = ".venv"
         // Ensure Python 3.13 installation path is available to the pipeline
         PATH = "${env.PATH};C:\\Program Files\\Python313"
+        // Define the Python path once here
         PYTHON = "C:\\Program Files\\Python313\\python.exe"
-        DOCKER_CRED  = 'dockerhub-creds' 
+        // Make sure this ID matches what is in your Jenkins Credentials
+        DOCKER_CRED  = 'docker-jenkins' 
     }
 
     stages {
@@ -18,6 +20,7 @@ pipeline {
                   branches: [[name: '*/main']],
                   userRemoteConfigs: [[
                     url: 'https://github.com/Vignesh1131321/se_lab.git',
+                    // Ensure this ID exists in Jenkins credentials
                     credentialsId: 'github-creds'
                   ]]
                 ])
@@ -27,9 +30,10 @@ pipeline {
         stage('Create Virtual Environment') {
             steps {
                 bat '''
-                    "C:\\Program Files\\Python313\\python.exe" -m venv .venv
+                    REM Use the variable defined at the top, quoted for safety
+                    "%PYTHON%" -m venv .venv
                     call %VENV%\\Scripts\\activate
-                    pip install --upgrade pip
+                    python -m pip install --upgrade pip
                 '''
             }
         }
@@ -47,6 +51,8 @@ pipeline {
             steps {
                 bat '''
                     call %VENV%\\Scripts\\activate
+                    REM ensure pytest is installed if not in requirements.txt
+                    pip install pytest 
                     pytest -v
                 '''
             }
@@ -60,7 +66,8 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker_jenkins',
+                // Now using the env.DOCKER_CRED variable defined at the top
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_CRED,
                                                   usernameVariable: 'USER',
                                                   passwordVariable: 'PASS')]) {
                     bat '''
