@@ -7,6 +7,7 @@ pipeline {
         // Ensure Python 3.13 installation path is available to the pipeline
         PATH = "${env.PATH};C:\\Program Files\\Python313"
         PYTHON = "C:\\Program Files\\Python313\\python.exe"
+        DOCKER_CRED  = 'dockerhub-creds' 
     }
 
     stages {
